@@ -24,7 +24,7 @@
         src: index.j2
         dest: "{{ html_output }}"
         mode: '0644'
-     vars:
+      vars:
         urls: "{{ http_responses.results }}"
 
     - name: Print results to console (optional)
