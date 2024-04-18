@@ -18,22 +18,6 @@
         state: directory
         mode: '0755'
 
-    - name: Criar conteúdo da página web de teste
-      ansible.builtin.copy:
-        dest: "{{ html_dir }}/index.html"
-        content: |
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Teste de Container HTTPD</title>
-          </head>
-          <body>
-            <h1>Página de Teste do Container Apache HTTPD</h1>
-            <p>Se você está vendo esta mensagem, o servidor Apache no container está funcionando corretamente.</p>
-          </body>
-          </html>          
-        mode: '0644'
-
     - name: Puxar a imagem do Apache HTTPD
       containers.podman.podman_image:
         name: "quay.io/allanroque/webserver-ubi:latest"
