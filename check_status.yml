@@ -1,6 +1,6 @@
 ---
 - name: Check URLs and Generate Status Page
-  hosts: localhost
+  hosts: automation_controller
   gather_facts: no
   vars:
     urls:
