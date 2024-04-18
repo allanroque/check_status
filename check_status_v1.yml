@@ -4,9 +4,9 @@
   gather_facts: no
   vars:
     urls:
-      - "https://www.ansible.com/"
-      - "https://access.redhat.com/"
-      - "https://developers.redhat.com/"
+      - "https://aap01.aroque.com.br"
+      - "https://web01.aroque.com.br"
+      - "https://web02.aroque.com.br"
     html_output: "/opt/local/html/index.html"
 
   tasks:
