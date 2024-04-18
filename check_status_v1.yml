@@ -21,7 +21,7 @@
 
     - name: Generate HTML content
       template:
-        src: 
+        src: index.j2
         dest: "{{ html_output }}"
         mode: '0644'
 
