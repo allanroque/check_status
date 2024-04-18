@@ -1,6 +1,7 @@
 ---
 - name: Subir um container Apache HTTPD usando Podman e configurar página de teste
   hosts: automation_controller
+  gather_facts: no
   become: true
   vars:
     html_dir: "/opt/local/html"  # Defina o diretório local para os arquivos HTML
