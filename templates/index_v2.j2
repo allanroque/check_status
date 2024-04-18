@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Status V2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .header, .section {
+            background-color: #ddd;
+            padding: 20px 0;
+            margin-bottom: 10px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .service {
+            background-color: #fff;
+            border: solid 1px #ddd;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+        .service-name {
+            color: #888;
+        }
+        .status-ok {
+            color: darkgreen;
+        }
+        .status-fail {
+            color: darkred;
+        }
+        .status-text {
+            font-weight: bold;
+            float: right;
+        }
+        .clear {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SYSTEM STATUS V2</h1>
+    </div>
+
+    <div class="service">
+        <h2>DNS SERVER - {{ dns_server }}</h2>
+        <p>Hostname resolution (forward): <span class="{{ 'status-ok' if dns_forward_resolution.rc == 0 else 'status-fail' }}">{{ 'OK' if dns_forward_resolution.rc == 0 else 'NOTOK' }}</span></p>
+        <p>Hostname resolution (reverse): <span class="{{ 'status-ok' if dns_reverse_resolution.rc == 0 else 'status-fail' }}">{{ 'OK' if dns_reverse_resolution.rc == 0 else 'NOTOK' }}</span></p>
+        <p>Service status (named): <span class="{{ 'status-ok' if dns_service_status.status == 'running' else 'status-fail' }}">{{ 'OK' if dns_service_status.status == 'running' else 'NOTOK' }}</span></p>
+        <div class="clear"></div>
+    </div>
+
+    <div class="service">
+        <h2>IPAM SERVER - {{ ipam_server }}</h2>
+        <p>Hostname resolution (forward): <span class="{{ 'status-ok' if ipam_forward_resolution.rc == 0 else 'status-fail' }}">{{ 'OK' if ipam_forward_resolution.rc == 0 else 'NOTOK' }}</span></p>
+        <p>Hostname resolution (reverse): <span class="{{ 'status-ok' if ipam_reverse_resolution.rc == 0 else 'status-fail' }}">{{ 'OK' if ipam_reverse_resolution.rc == 0 else 'NOTOK' }}</span></p>
+        <p>Service status (Netbox): <span class="{{ 'status-ok' if netbox_service_status.status == 'running' else 'status-fail' }}">{{ 'OK' if netbox_service_status.status == 'running' else 'NOTOK' }}</span></p>
+        <p>Service status (PostgreSQL): <span class="{{ 'status-ok' if postgresql_service_status.status == 'running' else 'status-fail' }}">{{ 'OK' if postgresql_service_status.status == 'running' else 'NOTOK' }}</span></p>
+        <p>URL response (IPAM): <span class="{{ 'status-ok' if ipam_url_response.status == 200 else 'status-fail' }}">{{ 'OK' if ipam_url_response.status == 200 else 'NOTOK' }}</span></p>
+        <div class="clear"></div>
+    </div>
+
+</body>
+</html>

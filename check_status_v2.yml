@@ -1,0 +1,88 @@
+---
+- name: Check Status of Critical Services
+  hosts: automation_controller
+  gather_facts: no
+  vars:
+    dns_server: "idmgit.aroque.com.br"
+    ipam_server: "ipamonit.aroque.com.br"
+    test_domain: "aroque.com.br" # Exemplo de domínio para teste de resolução de DNS
+
+  tasks:
+    - name: Ping DNS server
+      ping:
+        data: "{{ dns_server }}"
+      register: ping_dns_server
+      ignore_errors: true
+
+    - name: DNS resolution check (forward)
+      command: "nslookup {{ test_domain }} {{ dns_server }}"
+      register: dns_forward_resolution
+      ignore_errors: true
+
+    - name: DNS resolution check (reverse)
+      command: "nslookup {{ dns_server }}"
+      register: dns_reverse_resolution
+      ignore_errors: true
+
+    - name: Check DNS service (named)
+      service:
+        name: named
+        state: started
+      delegate_to: "{{ dns_server }}"
+      register: dns_service_status
+      ignore_errors: true
+
+    - name: Ping IPAM server
+      ping:
+        data: "{{ ipam_server }}"
+      register: ping_ipam_server
+      ignore_errors: true
+
+    - name: IPAM DNS resolution check (forward)
+      command: "nslookup {{ ipam_server }}"
+      register: ipam_forward_resolution
+      ignore_errors: true
+
+    - name: IPAM DNS resolution check (reverse)
+      command: "nslookup {{ ipam_server }}"
+      register: ipam_reverse_resolution
+      ignore_errors: true
+
+    - name: Check Netbox service
+      service:
+        name: netbox
+        state: started
+      delegate_to: "{{ ipam_server }}"
+      register: netbox_service_status
+      ignore_errors: true
+
+    - name: Check PostgreSQL service for DNS
+      service:
+        name: postgresql
+        state: started
+      delegate_to: "{{ dns_server }}"
+      register: postgresql_service_status
+      ignore_errors: true
+
+    - name: Validate IPAM URL response code
+      uri:
+        url: "http://{{ ipam_server }}"
+        return_content: false
+      register: ipam_url_response
+      ignore_errors: true
+
+    - name: Generate HTML status page from template
+      template:
+        src: index_v2.j2
+        dest: /opt/local/html/status_v2.html
+      vars:
+        dns_server: "{{ dns_server }}"
+        dns_forward_resolution: "{{ dns_forward_resolution }}"
+        dns_reverse_resolution: "{{ dns_reverse_resolution }}"
+        dns_service_status: "{{ dns_service_status }}"
+        ipam_server: "{{ ipam_server }}"
+        ipam_forward_resolution: "{{ ipam_forward_resolution }}"
+        ipam_reverse_resolution: "{{ ipam_reverse_resolution }}"
+        netbox_service_status: "{{ netbox_service_status }}"
+        postgresql_service_status: "{{ postgresql_service_status }}"
+        ipam_url_response: "{{ ipam_url_response }}"
