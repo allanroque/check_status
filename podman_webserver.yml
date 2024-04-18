@@ -1,0 +1,58 @@
+---
+- name: Subir um container Apache HTTPD usando Podman e configurar página de teste
+  hosts: automation_controller
+  become: true
+  vars:
+    html_dir: "/opt/local/html"  # Defina o diretório local para os arquivos HTML
+
+  tasks:
+    - name: Instalar Podman
+      package:
+        name: podman
+        state: present
+
+    - name: Criar diretório local para arquivos HTML
+      ansible.builtin.file:
+        path: "{{ html_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Criar conteúdo da página web de teste
+      ansible.builtin.copy:
+        dest: "{{ html_dir }}/index.html"
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Teste de Container HTTPD</title>
+          </head>
+          <body>
+            <h1>Página de Teste do Container Apache HTTPD</h1>
+            <p>Se você está vendo esta mensagem, o servidor Apache no container está funcionando corretamente.</p>
+          </body>
+          </html>          
+        mode: '0644'
+
+    - name: Puxar a imagem do Apache HTTPD
+      containers.podman.podman_image:
+        name: "quay.io/allanroque/webserver-ubi:latest"
+        state: present
+
+    - name: Rodar o container do Apache HTTPD
+      containers.podman.podman_container:
+        name: apache-httpd
+        image: "quay.io/allanroque/webserver-ubi:latest"
+        state: started
+        detach: true
+        publish:
+          - "8888:8888"
+        expose:
+          - 8888
+        volumes:
+          - "{{ html_dir }}:/var/www/html/:Z"
+
+    - name: Esperar pelo container estar ativo e acessível
+      wait_for:
+        port: 8888
+        state: started
+        timeout: 30
